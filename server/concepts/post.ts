@@ -1,7 +1,7 @@
 import { Filter, ObjectId } from "mongodb";
 
 import DocCollection, { BaseDoc } from "../framework/doc";
-import { NotAllowedError } from "./errors";
+import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
@@ -22,6 +22,15 @@ export default class PostConcept {
     });
     return posts;
   }
+
+  async getAuthor(_id: ObjectId) {
+	const post = await this.posts.readOne({ _id });
+	if (!post) {
+		throw new NotFoundError("Post ID not found.");
+	}
+	return post.author; 
+  }
+
 
   async delete(_id: ObjectId) {
     await this.posts.deleteOne({ _id });
